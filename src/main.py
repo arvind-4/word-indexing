@@ -1,48 +1,53 @@
-import os
+"""The script creates an index of words from text files in a specified directory."""
+
 import pathlib
 import re
-from typing import List
 
 
 def remove_special_characters_and_numbers(word: str) -> str:
+    """Remove special characters and numbers from a word."""
     return re.sub(r"[^a-zA-Z]", "", word)
 
 
-def create_index(pageFiles: List[str], excludeFile: str, indexFile: str) -> None:
-    excludedWords = set()
-    with open(excludeFile, "r") as f:
+def create_index(page_files: list[str], exclude_file: str, index_file: str) -> None:
+    """Create an index of words from the given page files, excluding specified words."""
+    excluded_words = set()
+    with pathlib.Path.open(exclude_file) as f:
         for line in f:
-            excludedWords.update(line.strip().split())
+            excluded_words.update(line.strip().split())
 
-    wordIndex = {}
-    for pageFile in pageFiles:
-        pageNumber = str(os.path.basename(pageFile).split(".")[0].split("Page")[1])
-        with open(pageFile, "r") as f:
+    word_index = {}
+    for page_file in page_files:
+        page_number = pathlib.Path(page_file).stem.split("-")[-1][-1]
+        with pathlib.Path.open(page_file) as f:
             for line in f:
                 words = line.strip().lower().split()
                 for word in words:
-                    word = remove_special_characters_and_numbers(word)
-                    if word and word not in excludedWords:
-                        if word not in wordIndex:
-                            wordIndex[word] = set()
-                        wordIndex[word].add(pageNumber)
+                    new_word = remove_special_characters_and_numbers(word)
+                    if new_word and new_word not in excluded_words:
+                        if new_word not in word_index:
+                            word_index[new_word] = set()
+                        word_index[new_word].add(page_number)
 
-    with open(indexFile, "w") as f:
+    with pathlib.Path.open(index_file, "w") as f:
         f.write("Word : Page Numbers\n")
         f.write("--------------\n\n")
-        for word, pages in sorted(wordIndex.items()):
-            f.write(f'{word} : {", ".join(sorted(pages))}\n')
+        for word, pages in sorted(word_index.items()):
+            f.write(f"{word} : {', '.join(sorted(pages))}\n")
 
 
-BASE_DIR = pathlib.Path(__file__).parent
-PAGE_DIR = BASE_DIR / "pages"
-OUTPUT_DIR = BASE_DIR / "output"
-OUTPUT_DIR.mkdir(exist_ok=True, parents=True)
+def main() -> None:
+    """Execute the main function of the script."""
+    base_dir = pathlib.Path(__file__).parent
+    page_dir = base_dir / "pages"
+    output_dir = base_dir / "output"
+    output_dir.mkdir(exist_ok=True, parents=True)
+    page_files = [str(file) for file in page_dir.glob("Page*.txt")]
+    index_file = output_dir / "index.txt"
+    exclude_file = page_dir / "exclude" / "exclude-words.txt"
 
-pageFiles = [str(file) for file in PAGE_DIR.glob("Page*.txt")]
-indexFile = OUTPUT_DIR / "index.txt"
-excludeFile = PAGE_DIR / "exclude" / "exclude-words.txt"
+    create_index(page_files, exclude_file, index_file)
 
 
 if __name__ == "__main__":
-    create_index(pageFiles=pageFiles, excludeFile=excludeFile, indexFile=indexFile)
+    main()
