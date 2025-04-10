@@ -1,5 +1,4 @@
-# Assignment
-
+# Word Indexing
 
 ## Challenge outline
 
@@ -13,28 +12,41 @@ Data for testing the program is present in Page1.txt, Page2.txt, Page3.txt & exc
 
 Correct answer for test data is present in index.txt.
 
-[The Question](https://github.com/Arvind-4/Assignment/blob/main/assignment/Assignment.txt)
+[The Question](https://github.com/Arvind-4/Assignment/blob/main/assignment/question.txt)
 
+## Requirements
+
+- Python 3.12 or above
+- uv
 
 
 ## Getting Started
 
-### Install requirements
+- Clone the repo
 
 ```bash
-python3.10 venv .
-source bin/activate
+mkdir -p ~/Dev/word-indexing
+cd ~/Dev/word-indexing
+git clone https://github.com/arvind-4/word-indexing.git .
+```
+
+- Install requirements (It's optional)
+
+```bash
+uv venv
+uv sync
+```
+
+> If you are not using `uv`, Try installing from `requirements.txt` file
+
+```bash
 pip install -r requirements.txt
 ```
 
-### Run the App
+- Run it locally
 
 ```bash
-python src/main.py
+uv run python src/main.py
 ```
-### Check Outputs
 
-```
-# output folder
-# ./src/output/index.txt
-```
+Now compare it with the `expected-output/index.txt` file.
